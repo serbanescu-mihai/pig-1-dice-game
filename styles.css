@@ -22,6 +22,7 @@ body {
   width: 80%;
   max-width: 50rem;
   /* height: 80vh; */
+  box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.3);
 }
 .game-name {
   text-align: center;
