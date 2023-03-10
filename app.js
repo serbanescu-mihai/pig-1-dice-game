@@ -17,61 +17,97 @@ modalOpenAndClose(closeModal);
 modalOpenAndClose(overlay);
 
 //game functionality
-let randomNumber = Math.floor(Math.random() * 20 + 1);
-console.log(randomNumber);
-let currentScore = 20;
-let currentHighscore = 0;
-const guess = document.querySelector(".guess");
-const number = document.querySelector(".number");
-const message = document.querySelector(".message");
-const score = document.querySelector(".score");
-const highscore = document.querySelector(".highscore");
-const container = document.querySelector(".container");
-const checkBtn = document.querySelector(".check");
+const playerName = document.querySelectorAll(".player-name");
+const dice = document.querySelector(".dice");
+const rollDice = document.querySelector(".roll");
+const holdDice = document.querySelector(".hold");
 
-highscore.textContent = currentHighscore;
+const currentScore0 = document.querySelector(".current-score-0");
+const currentScore1 = document.querySelector(".current-score-1");
+const totalScore0 = document.querySelector(".total-score-0");
+const totalScore1 = document.querySelector(".total-score-1");
 
-guess.addEventListener("click", () => {
-  guess.value = "";
+const player0 = document.querySelector(".player-0");
+const player1 = document.querySelector(".player-1");
+
+// totalScore0.textContent = 0;
+// totalScore1.textContent = 0;
+// dice.classList.add("hidden");
+
+let scores = [0, 0];
+let currentScore = 0;
+let activePlayer = 0;
+let playing = true;
+let score0 = 0;
+
+const newGame = () => {
+  scores = [0, 0];
+  currentScore = 0;
+  activePlayer = 0;
+  playing = true;
+  score0 = 0;
+  player0.classList.remove("winner");
+  player1.classList.remove("winner");
+  player0.classList.add("player-active");
+  player1.classList.remove("player-active");
+  totalScore0.textContent = 0;
+  totalScore1.textContent = 0;
+  currentScore0.textContent = 0;
+  currentScore1.textContent = 0;
+};
+newGame();
+
+const switchPlayer = () => {
+  currentScore = 0;
+  document.querySelector(`.current-score-${activePlayer}`).textContent =
+    currentScore;
+  // switch active player
+  activePlayer = activePlayer === 0 ? 1 : 0;
+  player0.classList.toggle("player-active");
+  player1.classList.toggle("player-active");
+};
+//custom player name
+playerName.forEach((e) => {
+  e.addEventListener("click", () => {
+    e.textContent = "";
+  });
 });
 
-// guess.focus();
+rollDice.addEventListener("click", () => {
+  if (playing) {
+    let diceValue = Math.floor(Math.random() * 6 + 1);
+    dice.src = `images/dice-${diceValue}.png`;
+    dice.classList.remove("hidden");
 
-checkBtn.addEventListener("click", () => {
-  if (!guess.value) {
-    message.textContent = "⚠️ You did not imput a number";
-  } else {
-    if (Number(guess.value) === randomNumber) {
-      message.textContent = "🎉 Congratulations! You have guessed the number!";
-      number.textContent = guess.value;
-      number.style.width = "10rem";
-      container.style.backgroundColor = "#00ff6c";
-      checkBtn.classList.add("hidden");
-      if (currentScore > currentHighscore) {
-        currentHighscore = currentScore;
-        highscore.textContent = currentHighscore;
-      }
-    } else if (Number(guess.value) > randomNumber) {
-      message.textContent = "Your guess is too high";
-      currentScore--;
-      score.textContent = currentScore;
-    } else if (Number(guess.value) < randomNumber) {
-      message.textContent = "Your guess is too low";
-      currentScore--;
-      score.textContent = currentScore;
+    if (diceValue === 1) {
+      switchPlayer();
+    } else {
+      currentScore += diceValue;
+      document.querySelector(`.current-score-${activePlayer}`).textContent =
+        currentScore;
+    }
+  }
+});
+
+holdDice.addEventListener("click", () => {
+  if (playing) {
+    scores[activePlayer] += currentScore;
+    document.querySelector(`.total-score-${activePlayer}`).textContent =
+      scores[activePlayer];
+
+    if (scores[activePlayer] > 100) {
+      playing = false;
+      document.querySelector(`.player-${activePlayer}`).classList.add("winner");
+      document
+        .querySelector(`.player-${activePlayer}`)
+        .classList.remove("player-active");
+      dice.classList.add("hidden");
+    } else {
+      switchPlayer();
     }
   }
 });
 
 playAgain.addEventListener("click", () => {
-  randomNumber = Math.floor(Math.random() * 20 + 1);
-  console.log(randomNumber);
-  message.textContent = "Start guessing...";
-  number.textContent = "?";
-  number.style.width = "6rem";
-  container.style.backgroundColor = "rgba(255, 255, 255, 0.6)";
-  checkBtn.classList.remove("hidden");
-  currentScore = 20;
-  score.textContent = currentScore;
-  guess.value = "";
+  newGame();
 });
